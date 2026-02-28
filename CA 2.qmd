@@ -11,16 +11,17 @@ library(knitr)
 library(dplyr)
 library(corrplot)
 library(tidyr)
+library(kableExtra)
 ```
 
 Database Import & SVD Function Call:
 
 ```{r}
-db <- read.csv("CA2.csv") |> as.matrix()
-sVD <- svd(db)
+X <- read.csv("CA2.csv") |> as.matrix()
+sVD <- svd(X)
 ```
 
-Latex Vector Output Function Declaration:
+Latex Output Helper Function Declaration:
 
 ```{r}
 latexVec <- function(x, digits = NULL) {
@@ -46,7 +47,7 @@ deltaVector <- vector("list", 12)
 
 for (k in 1:12) {
   xHatVector[[k]] <- svdApproximation(k)
-  deltaVector[[k]] <- db - xHatVector[[k]]
+  deltaVector[[k]] <- X - xHatVector[[k]]
 }
 ```
 
@@ -58,8 +59,64 @@ For **k = 4** the Mean Approximation Error Vector is as follows;
 delta4 <- deltaVector[[4]]
 delta4MeanVector <- colMeans(delta4)
 
+# CAN'T GET TO WORK: expression(bar(Delta)[4])
+
 cat("\\\n")
 cat("Mean Approximation Error Vector = ", latexVec(delta4MeanVector, digits = 3), "\n")
 cat("\\\n")
+```
+
+## Question 2:
+
+```{r echo = FALSE}
+xHat2 <- xHatVector[[2]]
+
+corX  <- cor(X)
+corXHat2 <- cor(xHat2)
+
+#cat("\nCorrelation Matrix of X:\n")
+#print(round(corX, 3))
+
+#cat("\nCorrelation Matrix of XHat2:\n")
+#print(round(corXHat2, 3))
+
+#corDiff <- corX - corXHat2
+#cat("\nSummary of Difference Between Correlation Matrices (corr(X) - corr(XHat2)):\n")
+#print(round(corDiff, 3))
+
+labsV <- paste0("V", seq_len(12))
+dimnames(corX)     <- list(labsV, labsV)
+dimnames(corXHat2) <- list(labsV, labsV)
+
+corLong <- function(C, name) {
+  as.data.frame(C) %>%
+    mutate(var1 = rownames(.)) %>%
+      pivot_longer(-var1, names_to = "var2", values_to = "corr") %>%
+        mutate(which = name,
+               corr_lab = sprintf("%.2f", corr),
+               var1 = factor(var1, levels = labsV),
+               var2 = factor(var2, levels = labsV))
+}
+
+corPlotDf <- bind_rows(
+  corLong(corX, "Correlation Matrix of X"),
+  corLong(corXHat2, "Correlation Matrix of XHat2")
+)
+
+ggplot(corPlotDf, aes(x = var2, y = var1, fill = corr)) +
+  geom_tile() +
+  scale_fill_distiller(palette = "RdYlBu", direction = 1, limits = c(-1, 1)) +
+  geom_text(aes(label = corr_lab), size = 2, col = "black") +
+  facet_wrap(~which, nrow = 1) +
+  coord_equal() +
+  labs(title = "Correlation Heatmaps",
+       x = NULL, y = NULL) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+    axis.text.y = element_text(size = 10),
+    panel.spacing = unit(1.2, "lines"),
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5)
+  )
 ```
 
