@@ -148,6 +148,9 @@ Mean Approximation Error Vector =
 <p><img src="CA-2_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>The correlation heatmap of the original data shows mostly weak to moderate correlations between the variables. Correlation relationships are present but not overwhelmingly strong; the 12 variables contain more than just 1 or 2 shared factors.</p>
+<p>The correlation heatmap of the rank 2 approximation of these data suggests that correlations become very strong (near ±1) because the rank 2 approximation compresses the data into only two factors. This causes the preservation of these data’s broad structure but distorts finer correlation detail and exaggerates pairwise dependencies as a result.</p>
+<p>In summary, the rank 2 approximation of these data keeps its main “shape” but its “resolution” is too low to reproduce the original correlation pattern faithfully as a result of “compression” (as seen in the Mona Lisa class example), so correlations look artificially strong.</p>
 </section>
 
 </main>

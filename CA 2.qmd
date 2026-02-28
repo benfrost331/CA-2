@@ -21,9 +21,8 @@ X <- read.csv("CA2.csv") |> as.matrix()
 sVD <- svd(X)
 ```
 
-Latex Output Helper Function Declaration:
 
-```{r}
+```{r echo = FALSE}
 latexVec <- function(x, digits = NULL) {
   if (!is.null(digits)) x <- round(x, digits)
   paste0("\\begin{bmatrix}", paste(x, collapse = " \\\\ "), "\\end{bmatrix}")
