@@ -98,10 +98,7 @@ corLong <- function(C, name) {
                var2 = factor(var2, levels = labsV))
 }
 
-corPlotDf <- bind_rows(
-  corLong(corX, "Correlation Matrix of X"),
-  corLong(corXHat2, "Correlation Matrix of XHat2")
-)
+corPlotDf <- bind_rows(corLong(corX, "Correlation Matrix of X"), corLong(corXHat2, "Correlation Matrix of XHat2"))
 
 ggplot(corPlotDf, aes(x = var2, y = var1, fill = corr)) +
   geom_tile() +
@@ -109,8 +106,7 @@ ggplot(corPlotDf, aes(x = var2, y = var1, fill = corr)) +
   geom_text(aes(label = corr_lab), size = 2, col = "black") +
   facet_wrap(~which, nrow = 1) +
   coord_equal() +
-  labs(title = "Correlation Heatmaps",
-       x = NULL, y = NULL) +
+  labs(title = "Correlation Heatmaps",x = NULL, y = NULL) +
   theme_minimal(base_size = 13) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
@@ -120,3 +116,8 @@ ggplot(corPlotDf, aes(x = var2, y = var1, fill = corr)) +
   )
 ```
 
+The correlation heatmap of the original data shows mostly weak to moderate correlations between the variables. Correlation relationships are present but not overwhelmingly strong; the 12 variables contain more than just 1 or 2 shared factors.
+
+The correlation heatmap of the rank 2 approximation of these data suggests that correlations become very strong (near ±1) because the rank 2 approximation compresses the data into only two factors. This causes the preservation of these data's broad structure but distorts finer correlation detail and exaggerates pairwise dependencies as a result.
+
+In summary, the rank 2 approximation of these data keeps its main “shape” but its "resolution" is too low to reproduce the original correlation pattern faithfully as a result of "compression" (as seen in the Mona Lisa class example), so correlations look artificially strong.
