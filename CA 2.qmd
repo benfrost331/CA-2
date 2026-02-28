@@ -1,11 +1,65 @@
 ---
-title: "CA 2"
+title: "Continued Assessment 2"
+format: html
+editor: visual
+author: "Undjee Kangueehi & Ben Frost"
 ---
 
-## Quarto
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(knitr)
+library(dplyr)
+library(corrplot)
+library(tidyr)
+```
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+Database Import & SVD Function Call:
 
 ```{r}
-1 + 1
+db <- read.csv("CA2.csv") |> as.matrix()
+sVD <- svd(db)
 ```
+
+Latex Vector Output Function Declaration:
+
+```{r}
+latexVec <- function(x, digits = NULL) {
+  if (!is.null(digits)) x <- round(x, digits)
+  paste0("\\begin{bmatrix}", paste(x, collapse = " \\\\ "), "\\end{bmatrix}")
+}
+```
+
+Approximation Function Declaration:
+
+```{r}
+svdApproximation <- function(rank) {
+  approx <- sVD$u[,1:rank] %*% diag(sVD$d)[1:rank, 1:rank, drop = FALSE] %*% t(sVD$v[,1:rank])
+  return(approx)
+}
+```
+
+Error Calculation for Each k = r:
+
+```{r}
+xHatVector <- vector("list", 12)
+deltaVector <- vector("list", 12)
+
+for (k in 1:12) {
+  xHatVector[[k]] <- svdApproximation(k)
+  deltaVector[[k]] <- db - xHatVector[[k]]
+}
+```
+
+## Question 1:
+
+For **k = 4** the Mean Approximation Error Vector is as follows;
+
+```{r results = 'asis', echo = FALSE}
+delta4 <- deltaVector[[4]]
+delta4MeanVector <- colMeans(delta4)
+
+cat("\\\n")
+cat("Mean Approximation Error Vector = ", latexVec(delta4MeanVector, digits = 3), "\n")
+cat("\\\n")
+```
+
